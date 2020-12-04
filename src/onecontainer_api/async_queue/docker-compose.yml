@@ -1,0 +1,48 @@
+version: '3.5'
+
+services:
+    oca_redis:
+        container_name: oca_redis
+        hostname: redis
+        image: redis:latest
+        command: --port 6379
+        networks:
+                services_net:
+                        ipv4_address: 10.5.0.4
+        restart: always
+
+    api:
+        container_name: oca_queue_api
+        build:
+            context: ./
+            dockerfile: ./Dockerfile
+        ports:
+            - "5057:5057"
+        working_dir: /workspace
+        networks:
+                services_net:
+                        ipv4_address: 10.5.0.5
+        command: uvicorn api:app --host 0.0.0.0 --port 5057 --reload
+
+    dashboard:
+        container_name: oca_queue_dashboard
+        build:
+            context: ./
+            dockerfile: ./Dockerfile
+        working_dir: /workspace
+        ports:
+        - 5555:5555
+        command: rq-dashboard --port 5555 --redis-url redis://oca_redis:6379
+        networks:
+                services_net:
+                        ipv4_address: 10.5.0.6
+        links:
+              - oca_redis
+
+networks:
+  services_net:
+    name: oca_network
+    driver: bridge
+    ipam:
+        config:
+           - subnet: 10.5.0.0/16

@@ -1,0 +1,7 @@
+{
+    "name": "<driver_name>",
+    "app": "<service_name>",
+    "app_version_match": ">=<service_version>",
+    "version": "0.0.1",
+    "scope": "db",
+}

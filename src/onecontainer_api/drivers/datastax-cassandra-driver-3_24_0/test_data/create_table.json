@@ -1,0 +1,14 @@
+{
+  "name": "users_table2",
+  "columns": [
+    {
+      "name": "id",
+      "datatype": "int"
+    },
+    {
+      "name": "name",
+      "datatype": "text"
+    }
+  ],
+  "primary_key": ["id"]
+}

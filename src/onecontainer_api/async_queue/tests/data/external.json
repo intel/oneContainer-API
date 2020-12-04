@@ -1,0 +1,5 @@
+{
+   "url":"http://numbersapi.com/random/year",
+   "req_type":"get",
+   "ttl":"700"
+}

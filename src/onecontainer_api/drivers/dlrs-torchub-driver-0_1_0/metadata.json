@@ -1,0 +1,11 @@
+{
+    "name": "dlrs-torchub-driver",
+    "app": "dlrs-pytorch-torchub",
+    "app_version_match": ">=0.1.0",
+    "version": "0.1.0",
+    "deployment": "dockerfile",
+    "scope": "ai",
+    "meta": {
+        "input_format": "raw"
+    }
+}

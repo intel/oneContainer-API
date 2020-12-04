@@ -1,0 +1,5 @@
+{
+	"path": "pytorch/vision:v0.6.0",
+	"name": "resnet18",
+	"kwargs": {"pretrained": true}
+}

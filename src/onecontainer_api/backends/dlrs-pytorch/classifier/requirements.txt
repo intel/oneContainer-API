@@ -1,0 +1,8 @@
+efficientnet_pytorch==0.7.*
+hypercorn==0.8.*
+hypercorn[uvloop]==0.8.*
+pillow==7.2.*
+quart==0.10.*
+quart-cors==0.2.*
+python-rapidjson==0.9.*
+uvloop==0.14.*

@@ -1,0 +1,4 @@
+aiohttp==3.6.*
+aiofiles==0.5.*
+loguru==0.5.*
+sanic==20.9.*

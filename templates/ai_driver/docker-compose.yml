@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+    ai_client_api:
+        container_name: ai_client
+        build:
+            context: ./
+            dockerfile: ./Dockerfile
+        ports:
+            - "7058:7058"
+        working_dir: /workspace
+        network_mode: "host"
+        command:  python service.py
+

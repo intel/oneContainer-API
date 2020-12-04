@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+    dlrs_torchub_client_api:
+        container_name: pytorch
+        build:
+            context: ./
+            dockerfile: ./Dockerfile
+        ports:
+            - "7058:7058"
+        working_dir: /workspace
+        network_mode: "host"
+        command:  python api.py
+

@@ -1,0 +1,7 @@
+{
+    "name": "<ai-driver>",
+    "app": "<ai-backend>",
+    "app_version_match": "<version>",
+    "version": "<version>",
+    "scope": "ai"
+}

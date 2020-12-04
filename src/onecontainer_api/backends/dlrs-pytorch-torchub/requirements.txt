@@ -1,0 +1,6 @@
+pillow==7.2.*
+hypercorn==0.8.*
+hypercorn[trio]==0.8.*
+trio==0.17.*
+sanic==20.9.1
+loguru==0.5.*

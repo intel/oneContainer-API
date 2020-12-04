@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+    dlrs_simple_client_api:
+        container_name: pytorch
+        build:
+            context: ./
+            dockerfile: ./Dockerfile
+        ports:
+            - "7057:7057"
+        working_dir: /workspace
+        network_mode: "host"
+        command:  hypercorn -kuvloop -b0.0.0.0:7057 --debug -w2 api:app
+
