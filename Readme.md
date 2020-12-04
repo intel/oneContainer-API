@@ -29,7 +29,7 @@ $ poetry shell
 To start onecontainer_api, from CLI (oca), run the following command:
 
 ```bash
-$ cd onecontainer-api/src/onecontainer_api
+$ cd oneContainer-API/src/onecontainer_api
 $ poetry run oca launch
 ```
 
