@@ -1,0 +1,4 @@
+{
+	"name": "resnet34",
+	"kwargs": {"pretrained": true}
+}

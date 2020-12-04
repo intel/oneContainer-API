@@ -1,0 +1,8 @@
+requests==2.24.0
+loguru==0.5.3
+fastapi==0.61.1
+redis==3.5.3
+rq==1.5.2
+rq-dashboard==0.6.1
+uvicorn==0.12.1
+python-multipart==0.0.5

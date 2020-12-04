@@ -1,0 +1,1671 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+      "title": "One Container API",
+      "description": "A platform to support serving multiple backend microservices over a unified API",
+      "version": "0.1.0"
+    },
+    "paths": {
+      "/ai/{service_id}/usage": {
+        "get": {
+          "tags": [
+            "service_api"
+          ],
+          "summary": "Usage",
+          "description": "Get functions available for this service",
+          "operationId": "usage_ai__service_id__usage_get",
+          "parameters": [
+            {
+              "required": true,
+              "schema": {
+                "title": "Service Id",
+                "type": "string"
+              },
+              "name": "service_id",
+              "in": "path"
+            },
+            {
+              "required": false,
+              "schema": {
+                "title": "Sync",
+                "type": "boolean",
+                "default": false
+              },
+              "name": "sync",
+              "in": "query"
+            },
+            {
+              "required": false,
+              "schema": {
+                "title": "Ttl",
+                "type": "integer",
+                "default": 3600
+              },
+              "name": "ttl",
+              "in": "query"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/ai/{service_id}/serve": {
+        "post": {
+          "tags": [
+            "service_api"
+          ],
+          "summary": "Serve",
+          "description": "Load a model",
+          "operationId": "serve_ai__service_id__serve_post",
+          "parameters": [
+            {
+              "required": true,
+              "schema": {
+                "title": "Service Id",
+                "type": "string"
+              },
+              "name": "service_id",
+              "in": "path"
+            },
+            {
+              "required": false,
+              "schema": {
+                "title": "Sync",
+                "type": "boolean",
+                "default": false
+              },
+              "name": "sync",
+              "in": "query"
+            },
+            {
+              "required": false,
+              "schema": {
+                "title": "Ttl",
+                "type": "integer",
+                "default": 3600
+              },
+              "name": "ttl",
+              "in": "query"
+            }
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AIModelMeta"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/ai/{service_id}/predict": {
+        "post": {
+          "tags": [
+            "service_api"
+          ],
+          "summary": "Predict",
+          "description": "Execute an inference over an image",
+          "operationId": "predict_ai__service_id__predict_post",
+          "parameters": [
+            {
+              "required": true,
+              "schema": {
+                "title": "Service Id",
+                "type": "string"
+              },
+              "name": "service_id",
+              "in": "path"
+            },
+            {
+              "required": false,
+              "schema": {
+                "title": "Sync",
+                "type": "boolean",
+                "default": false
+              },
+              "name": "sync",
+              "in": "query"
+            },
+            {
+              "required": false,
+              "schema": {
+                "title": "Ttl",
+                "type": "integer",
+                "default": 3600
+              },
+              "name": "ttl",
+              "in": "query"
+            }
+          ],
+          "requestBody": {
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "$ref": "#/components/schemas/Body_predict_ai__service_id__predict_post"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/db/{service_id}/table": {
+        "get": {
+          "tags": [
+            "service_api"
+          ],
+          "summary": "List Table",
+          "description": "List tables available",
+          "operationId": "list_table_db__service_id__table_get",
+          "parameters": [
+            {
+              "required": true,
+              "schema": {
+                "title": "Service Id",
+                "type": "string"
+              },
+              "name": "service_id",
+              "in": "path"
+            },
+            {
+              "required": false,
+              "schema": {
+                "title": "Sync",
+                "type": "boolean",
+                "default": false
+              },
+              "name": "sync",
+              "in": "query"
+            },
+            {
+              "required": false,
+              "schema": {
+                "title": "Ttl",
+                "type": "integer",
+                "default": 3600
+              },
+              "name": "ttl",
+              "in": "query"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "post": {
+          "tags": [
+            "service_api"
+          ],
+          "summary": "Post Table",
+          "description": "Create a new table",
+          "operationId": "post_table_db__service_id__table_post",
+          "parameters": [
+            {
+              "required": true,
+              "schema": {
+                "title": "Service Id",
+                "type": "string"
+              },
+              "name": "service_id",
+              "in": "path"
+            },
+            {
+              "required": false,
+              "schema": {
+                "title": "Sync",
+                "type": "boolean",
+                "default": false
+              },
+              "name": "sync",
+              "in": "query"
+            },
+            {
+              "required": false,
+              "schema": {
+                "title": "Ttl",
+                "type": "integer",
+                "default": 3600
+              },
+              "name": "ttl",
+              "in": "query"
+            }
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Table"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/db/{service_id}/table/{table_name}": {
+        "get": {
+          "tags": [
+            "service_api"
+          ],
+          "summary": "Describe Table",
+          "description": "List records in a table",
+          "operationId": "describe_table_db__service_id__table__table_name__get",
+          "parameters": [
+            {
+              "required": true,
+              "schema": {
+                "title": "Service Id",
+                "type": "string"
+              },
+              "name": "service_id",
+              "in": "path"
+            },
+            {
+              "required": true,
+              "schema": {
+                "title": "Table Name",
+                "type": "string"
+              },
+              "name": "table_name",
+              "in": "path"
+            },
+            {
+              "required": false,
+              "schema": {
+                "title": "Sync",
+                "type": "boolean",
+                "default": false
+              },
+              "name": "sync",
+              "in": "query"
+            },
+            {
+              "required": false,
+              "schema": {
+                "title": "Ttl",
+                "type": "integer",
+                "default": 3600
+              },
+              "name": "ttl",
+              "in": "query"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/db/{service_id}/table/{table_name}/record": {
+        "get": {
+          "tags": [
+            "service_api"
+          ],
+          "summary": "List Records",
+          "description": "Select records of a table using DQL",
+          "operationId": "list_records_db__service_id__table__table_name__record_get",
+          "parameters": [
+            {
+              "required": true,
+              "schema": {
+                "title": "Service Id",
+                "type": "string"
+              },
+              "name": "service_id",
+              "in": "path"
+            },
+            {
+              "required": true,
+              "schema": {
+                "title": "Table Name",
+                "type": "string"
+              },
+              "name": "table_name",
+              "in": "path"
+            },
+            {
+              "required": false,
+              "schema": {
+                "title": "Sync",
+                "type": "boolean",
+                "default": false
+              },
+              "name": "sync",
+              "in": "query"
+            },
+            {
+              "required": false,
+              "schema": {
+                "title": "Ttl",
+                "type": "integer",
+                "default": 3600
+              },
+              "name": "ttl",
+              "in": "query"
+            },
+            {
+              "required": false,
+              "schema": {
+                "title": "Dql Options",
+                "type": "string",
+                "default": ""
+              },
+              "name": "dql_options",
+              "in": "query"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "put": {
+          "tags": [
+            "service_api"
+          ],
+          "summary": "Update Records",
+          "description": "Update records in a table using DML filtering",
+          "operationId": "update_records_db__service_id__table__table_name__record_put",
+          "parameters": [
+            {
+              "required": true,
+              "schema": {
+                "title": "Service Id",
+                "type": "string"
+              },
+              "name": "service_id",
+              "in": "path"
+            },
+            {
+              "required": true,
+              "schema": {
+                "title": "Table Name",
+                "type": "string"
+              },
+              "name": "table_name",
+              "in": "path"
+            },
+            {
+              "required": false,
+              "schema": {
+                "title": "Sync",
+                "type": "boolean",
+                "default": false
+              },
+              "name": "sync",
+              "in": "query"
+            },
+            {
+              "required": false,
+              "schema": {
+                "title": "Ttl",
+                "type": "integer",
+                "default": 3600
+              },
+              "name": "ttl",
+              "in": "query"
+            }
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordDMLOptions"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "post": {
+          "tags": [
+            "service_api"
+          ],
+          "summary": "Create Records",
+          "description": "Insert a record in a table using DML",
+          "operationId": "create_records_db__service_id__table__table_name__record_post",
+          "parameters": [
+            {
+              "required": true,
+              "schema": {
+                "title": "Service Id",
+                "type": "string"
+              },
+              "name": "service_id",
+              "in": "path"
+            },
+            {
+              "required": true,
+              "schema": {
+                "title": "Table Name",
+                "type": "string"
+              },
+              "name": "table_name",
+              "in": "path"
+            },
+            {
+              "required": false,
+              "schema": {
+                "title": "Sync",
+                "type": "boolean",
+                "default": false
+              },
+              "name": "sync",
+              "in": "query"
+            },
+            {
+              "required": false,
+              "schema": {
+                "title": "Ttl",
+                "type": "integer",
+                "default": 3600
+              },
+              "name": "ttl",
+              "in": "query"
+            }
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordDMLOptions"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "delete": {
+          "tags": [
+            "service_api"
+          ],
+          "summary": "Delete Records",
+          "description": "Delete records from a table using DML filtering",
+          "operationId": "delete_records_db__service_id__table__table_name__record_delete",
+          "parameters": [
+            {
+              "required": true,
+              "schema": {
+                "title": "Service Id",
+                "type": "string"
+              },
+              "name": "service_id",
+              "in": "path"
+            },
+            {
+              "required": true,
+              "schema": {
+                "title": "Table Name",
+                "type": "string"
+              },
+              "name": "table_name",
+              "in": "path"
+            },
+            {
+              "required": false,
+              "schema": {
+                "title": "Sync",
+                "type": "boolean",
+                "default": false
+              },
+              "name": "sync",
+              "in": "query"
+            },
+            {
+              "required": false,
+              "schema": {
+                "title": "Ttl",
+                "type": "integer",
+                "default": 3600
+              },
+              "name": "ttl",
+              "in": "query"
+            }
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecordDMLOptions"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/service/": {
+        "get": {
+          "tags": [
+            "management_api"
+          ],
+          "summary": "List Services",
+          "description": "List backend services available",
+          "operationId": "list_services_service__get",
+          "parameters": [
+            {
+              "required": false,
+              "schema": {
+                "title": "Skip",
+                "type": "integer",
+                "default": 0
+              },
+              "name": "skip",
+              "in": "query"
+            },
+            {
+              "required": false,
+              "schema": {
+                "title": "Limit",
+                "type": "integer",
+                "default": 100
+              },
+              "name": "limit",
+              "in": "query"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "title": "Response List Services Service  Get",
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Service"
+                    }
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "post": {
+          "tags": [
+            "management_api"
+          ],
+          "summary": "Post Service",
+          "description": "Register a backend service",
+          "operationId": "post_service_service__post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceCreate"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/service/{service_id}": {
+        "get": {
+          "tags": [
+            "management_api"
+          ],
+          "summary": "Get Service",
+          "description": "Get information about a backend service",
+          "operationId": "get_service_service__service_id__get",
+          "parameters": [
+            {
+              "required": true,
+              "schema": {
+                "title": "Service Id",
+                "type": "string"
+              },
+              "name": "service_id",
+              "in": "path"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Service"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "put": {
+          "tags": [
+            "management_api"
+          ],
+          "summary": "Put Service",
+          "description": "Update information of a backend service",
+          "operationId": "put_service_service__service_id__put",
+          "parameters": [
+            {
+              "required": true,
+              "schema": {
+                "title": "Service Id",
+                "type": "string"
+              },
+              "name": "service_id",
+              "in": "path"
+            }
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceUpdate"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "delete": {
+          "tags": [
+            "management_api"
+          ],
+          "summary": "Delete Service",
+          "description": "Remove the record of a backend service",
+          "operationId": "delete_service_service__service_id__delete",
+          "parameters": [
+            {
+              "required": true,
+              "schema": {
+                "title": "Service Id",
+                "type": "string"
+              },
+              "name": "service_id",
+              "in": "path"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/service/{service_id}/heartbeat": {
+        "get": {
+          "tags": [
+            "management_api"
+          ],
+          "summary": "Ping Service",
+          "description": "Test connection to a backend service",
+          "operationId": "ping_service_service__service_id__heartbeat_get",
+          "parameters": [
+            {
+              "required": true,
+              "schema": {
+                "title": "Service Id",
+                "type": "string"
+              },
+              "name": "service_id",
+              "in": "path"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/service/{service_id}/driver": {
+        "get": {
+          "tags": [
+            "management_api"
+          ],
+          "summary": "Avail Drivers",
+          "description": "Get the driver assigned to a backend service",
+          "operationId": "avail_drivers_service__service_id__driver_get",
+          "parameters": [
+            {
+              "required": true,
+              "schema": {
+                "title": "Service Id",
+                "type": "string"
+              },
+              "name": "service_id",
+              "in": "path"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "title": "Response Avail Drivers Service  Service Id  Driver Get",
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/DriverBase"
+                    }
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "post": {
+          "tags": [
+            "management_api"
+          ],
+          "summary": "Assign Driver",
+          "description": "Assign a driver to a service",
+          "operationId": "assign_driver_service__service_id__driver_post",
+          "parameters": [
+            {
+              "required": true,
+              "schema": {
+                "title": "Service Id",
+                "type": "string"
+              },
+              "name": "service_id",
+              "in": "path"
+            }
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DriverCreate"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DriverBase"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/driver/": {
+        "get": {
+          "tags": [
+            "management_api"
+          ],
+          "summary": "List Drivers",
+          "description": "Get drivers available",
+          "operationId": "list_drivers_driver__get",
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "title": "Response List Drivers Driver  Get",
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/DriverBase"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "post": {
+          "tags": [
+            "management_api"
+          ],
+          "summary": "Post Driver",
+          "description": "Add a plugin driver",
+          "operationId": "post_driver_driver__post",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DriverCreate"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DriverBase"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/driver/{drv_name_ver}": {
+        "get": {
+          "tags": [
+            "management_api"
+          ],
+          "summary": "Get Driver",
+          "description": "Get driver information",
+          "operationId": "get_driver_driver__drv_name_ver__get",
+          "parameters": [
+            {
+              "required": true,
+              "schema": {
+                "title": "Drv Name Ver",
+                "type": "string"
+              },
+              "name": "drv_name_ver",
+              "in": "path"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DriverBase"
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/job/{job_id}": {
+        "get": {
+          "tags": [
+            "service_api"
+          ],
+          "summary": "Get Job",
+          "description": "Query a job execution result",
+          "operationId": "get_job_job__job_id__get",
+          "parameters": [
+            {
+              "required": true,
+              "schema": {
+                "title": "Job Id",
+                "type": "string"
+              },
+              "name": "job_id",
+              "in": "path"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "Validation Error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/HTTPValidationError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/": {
+        "get": {
+          "summary": "Index",
+          "operationId": "index__get",
+          "responses": {
+            "200": {
+              "description": "Successful Response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "AIModelMeta": {
+          "title": "AIModelMeta",
+          "required": [
+            "name",
+            "path"
+          ],
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Name",
+              "type": "string"
+            },
+            "path": {
+              "title": "Path",
+              "type": "string"
+            },
+            "kwargs": {
+              "title": "Kwargs",
+              "type": "object"
+            }
+          }
+        },
+        "Body_predict_ai__service_id__predict_post": {
+          "title": "Body_predict_ai__service_id__predict_post",
+          "required": [
+            "image_file"
+          ],
+          "type": "object",
+          "properties": {
+            "image_file": {
+              "title": "Image File",
+              "type": "string",
+              "format": "binary"
+            }
+          }
+        },
+        "Column": {
+          "title": "Column",
+          "required": [
+            "name",
+            "datatype"
+          ],
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Name",
+              "type": "string"
+            },
+            "datatype": {
+              "title": "Datatype",
+              "type": "string"
+            }
+          }
+        },
+        "DMLExistCondition": {
+          "title": "DMLExistCondition",
+          "enum": [
+            "if_exist",
+            "if_not_exist"
+          ],
+          "type": "string",
+          "description": "An enumeration."
+        },
+        "DriverBase": {
+          "title": "DriverBase",
+          "required": [
+            "name",
+            "version",
+            "app",
+            "app_version_match",
+            "scope",
+            "source_type"
+          ],
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Name",
+              "type": "string"
+            },
+            "version": {
+              "title": "Version",
+              "type": "string"
+            },
+            "app": {
+              "title": "App",
+              "type": "string"
+            },
+            "app_version_match": {
+              "title": "App Version Match",
+              "type": "string"
+            },
+            "scope": {
+              "$ref": "#/components/schemas/Scopes"
+            },
+            "source_type": {
+              "$ref": "#/components/schemas/SourceTypes"
+            },
+            "location": {
+              "title": "Location",
+              "type": "string"
+            },
+            "meta": {
+              "title": "Meta",
+              "type": "object"
+            }
+          }
+        },
+        "DriverCreate": {
+          "title": "DriverCreate",
+          "required": [
+            "name"
+          ],
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Name",
+              "type": "string"
+            },
+            "source_type": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/SourceTypes"
+                }
+              ],
+              "default": "native"
+            },
+            "location": {
+              "title": "Location",
+              "type": "string"
+            }
+          }
+        },
+        "HTTPValidationError": {
+          "title": "HTTPValidationError",
+          "type": "object",
+          "properties": {
+            "detail": {
+              "title": "Detail",
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ValidationError"
+              }
+            }
+          }
+        },
+        "RecordDMLOptions": {
+          "title": "RecordDMLOptions",
+          "type": "object",
+          "properties": {
+            "field_values": {
+              "title": "Field Values",
+              "type": "object"
+            },
+            "where": {
+              "title": "Where",
+              "type": "object"
+            },
+            "ttl": {
+              "title": "Ttl",
+              "type": "integer"
+            },
+            "timestamp": {
+              "title": "Timestamp",
+              "type": "integer"
+            },
+            "field_conditions": {
+              "title": "Field Conditions",
+              "type": "object"
+            },
+            "exist_condition": {
+              "$ref": "#/components/schemas/DMLExistCondition"
+            }
+          }
+        },
+        "Scopes": {
+          "title": "Scopes",
+          "enum": [
+            "ai",
+            "db",
+            "media",
+            "hpc"
+          ],
+          "type": "string",
+          "description": "Enum str class for scopes of service api functions of onecontainer-api\n\nai means artificial intelligence functions\ndb means database functions\nmedia means media transcoding functions\nhpc means high performance computing functions"
+        },
+        "Service": {
+          "title": "Service",
+          "required": [
+            "name",
+            "version",
+            "app",
+            "app_version",
+            "locations",
+            "meta",
+            "id"
+          ],
+          "type": "object",
+          "properties": {
+            "description": {
+              "title": "Description",
+              "type": "string"
+            },
+            "driver": {
+              "title": "Driver",
+              "type": "string"
+            },
+            "name": {
+              "title": "Name",
+              "type": "string"
+            },
+            "version": {
+              "title": "Version",
+              "type": "string"
+            },
+            "app": {
+              "title": "App",
+              "type": "string"
+            },
+            "app_version": {
+              "title": "App Version",
+              "type": "string"
+            },
+            "locations": {
+              "title": "Locations",
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "meta": {
+              "title": "Meta",
+              "type": "object"
+            },
+            "id": {
+              "title": "Id",
+              "type": "string"
+            }
+          }
+        },
+        "ServiceCreate": {
+          "title": "ServiceCreate",
+          "required": [
+            "name",
+            "version",
+            "app",
+            "app_version",
+            "locations",
+            "meta"
+          ],
+          "type": "object",
+          "properties": {
+            "description": {
+              "title": "Description",
+              "type": "string"
+            },
+            "driver": {
+              "title": "Driver",
+              "type": "string"
+            },
+            "name": {
+              "title": "Name",
+              "type": "string"
+            },
+            "version": {
+              "title": "Version",
+              "type": "string"
+            },
+            "app": {
+              "title": "App",
+              "type": "string"
+            },
+            "app_version": {
+              "title": "App Version",
+              "type": "string"
+            },
+            "locations": {
+              "title": "Locations",
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "meta": {
+              "title": "Meta",
+              "type": "object"
+            }
+          }
+        },
+        "ServiceUpdate": {
+          "title": "ServiceUpdate",
+          "type": "object",
+          "properties": {
+            "description": {
+              "title": "Description",
+              "type": "string"
+            },
+            "driver": {
+              "title": "Driver",
+              "type": "string"
+            },
+            "name": {
+              "title": "Name",
+              "type": "string"
+            },
+            "version": {
+              "title": "Version",
+              "type": "string"
+            },
+            "app": {
+              "title": "App",
+              "type": "string"
+            },
+            "app_version": {
+              "title": "App Version",
+              "type": "string"
+            },
+            "locations": {
+              "title": "Locations",
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "meta": {
+              "title": "Meta",
+              "type": "object"
+            }
+          }
+        },
+        "SourceTypes": {
+          "title": "SourceTypes",
+          "enum": [
+            "native",
+            "plugin"
+          ],
+          "type": "string",
+          "description": "Types of drivers\n\nnative means driver source code is hosted as part of onecontainer-api code and driver.location\nshould be empty.\nplugin means driver source code is hosted as a git repository and driver.location\nshould be a git repository."
+        },
+        "Table": {
+          "title": "Table",
+          "required": [
+            "name",
+            "columns"
+          ],
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Name",
+              "type": "string"
+            },
+            "columns": {
+              "title": "Columns",
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Column"
+              }
+            },
+            "primary_key": {
+              "title": "Primary Key",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "ValidationError": {
+          "title": "ValidationError",
+          "required": [
+            "loc",
+            "msg",
+            "type"
+          ],
+          "type": "object",
+          "properties": {
+            "loc": {
+              "title": "Location",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "msg": {
+              "title": "Message",
+              "type": "string"
+            },
+            "type": {
+              "title": "Error Type",
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }

@@ -1,0 +1,21 @@
+version: '3.5'
+
+services:
+    stub_service_api:
+        container_name: stub_service
+        build:
+            context: ./
+            dockerfile: ./Dockerfile
+        ports:
+           - "5055:5055"
+        expose:
+            - "5055"
+        working_dir: /workspace
+        volumes:
+            - ./:/workspace
+        networks:
+                - oca_network
+
+networks:
+        oca_network:
+            external: true

@@ -1,0 +1,11 @@
+{
+    "name": "dlrs-pytorch-minimal",
+    "app": "dlrs-pytorch-classify",
+    "app_version_match": ">=0.1.0",
+    "version": "0.1.0",
+    "deployment": "dockerfile",
+    "scope": "ai",
+    "meta": {
+        "input_format": "raw"
+    }
+}

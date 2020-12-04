@@ -1,0 +1,8 @@
+aiohttp==3.6.*
+aiofiles==0.5.*
+loguru==0.5.*
+hypercorn==0.8.*
+quart==0.10.*
+quart-cors==0.2.*
+hypercorn[uvloop]==0.8.*
+uvloop==0.14.*

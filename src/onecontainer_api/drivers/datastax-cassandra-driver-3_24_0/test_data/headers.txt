@@ -1,0 +1,3 @@
+Content-Type: application/json
+Hosts: 10.219.105.209
+Metadata: {"keyspace": "records_database", "replication": {"class": "SimpleStrategy","replication_factor": 1}}

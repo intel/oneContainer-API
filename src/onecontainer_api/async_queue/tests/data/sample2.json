@@ -1,0 +1,7 @@
+{
+   "data": {"key1": "val1"},
+   "url":"http://172.18.0.1:5055/fast",
+   "req_type":"post",
+   "ttl":"1500",
+   "name": "testing_queue"
+}
