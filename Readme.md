@@ -1,6 +1,6 @@
 # oneContainer API
 
-OneContainer-APi is a platform to enable unified APIs for containerized services and backends in multiple segments like AI, Database, and Media.
+OneContainer-API is a platform to enable unified APIs for containerized services and backends in multiple segments like AI, Database, and Media.
 
 <img src=images/oneca-arch0.2.0.jpg width=700 height=600/>
 
