@@ -4,7 +4,7 @@ A platform to enable unified APIs with service backends for multiple verticals.
 
 <img src=images/oneca-arch0.2.0.jpg width=700 height=600/>
 
-The framework is backend agnostic and have been tested with Intel® optimized stacks for Deep Learning, the Deep Learning Reference Stack(DLRS) and Data Services, the Data Services Reference Stack(DSRS). For more information on Intel® System Stacks for Linux, checkout, [stacks](https://intel.github.io/stacks/)
+The framework is backend agnostic and have been tested with Intel® optimized stacks for Deep Learning, the Deep Learning Reference Stack (DLRS) and Data Services, the Data Services Reference Stack (DSRS). For more information on Intel® System Stacks for Linux, checkout, [stacks](https://intel.github.io/stacks/)
 
 ## Installation
 
