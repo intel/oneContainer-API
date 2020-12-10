@@ -134,3 +134,15 @@ Onecontainer-api uses the [OpenAPI](https://www.openapis.org/) standard to gener
 ## Getting started
 
 For a *Getting started* tutorial, view the [Readme.md](demo/Readme.md) in the `demo` directory.
+
+## Contributing
+
+We'd love to accept your patches, if you have improvements to stacks, send us your pull requests or if you find any issues, raise an issue. Contributions can be anything from documentation updates to optimizations!
+
+## Security Issues
+
+Security issues can be reported to Intel's security incident response team via https://intel.com/security.
+
+## Mailing List
+
+See our public [mailing list](https://lists.01.org/mailman/listinfo/stacks) page for details on how to contact us. You should only subscribe to the Stacks mailing lists using an email address that you don't mind being public.
