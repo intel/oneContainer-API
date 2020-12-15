@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: BSD-3-Clause
+#  Copyright (c) 2020 Intel Corporation
 """AI vertical entrypoint."""
 
 from typing import List
