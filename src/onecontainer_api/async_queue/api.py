@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: BSD-3-Clause
+#  Copyright (c) 2020 Intel Corporation
 """interface to redis-queue."""
 from enum import Enum
 from typing import Optional
