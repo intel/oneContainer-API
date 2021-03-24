@@ -1,4 +1,4 @@
-"""logger config for cassandra driver"""
+"""logger config for mers-ffmpeg driver"""
 from pathlib import Path
 
 from loguru import logger
@@ -9,7 +9,7 @@ def _mk_log_dir(path: str) -> Path:
 
 
 def log_config(
-    file_path: Path = _mk_log_dir("logs/torchhub-serving.log"),
+    file_path: Path = _mk_log_dir("logs/driver/mers-ffmpeg.log"),
     file_retention=1,
     file_rotation=30,
     level="DEBUG",

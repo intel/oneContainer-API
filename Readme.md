@@ -1,10 +1,9 @@
 # oneContainer API
 
-OneContainer-API is a platform to enable unified APIs for containerized services and backends in multiple segments like AI, Database, and Media.
+A platform to enable unified APIs with service backends for multiple verticals.
 
 <img src=images/oneca-arch0.2.0.jpg width=700 height=600/>
 
-The framework is backend agnostic and have been tested with Intel® optimized stacks for Deep Learning, the Deep Learning Reference Stack (DLRS) and Data Services, the Data Services Reference Stack (DSRS). For more information on Intel® System Stacks for Linux, checkout, [stacks](https://intel.github.io/stacks/)
 
 ## Installation
 
@@ -12,6 +11,8 @@ The requirements for onecontainer-api are the following:
 
  * Python >= 3.7
  * poetry >= 0.12
+ * docker version 19
+ * docker-compose version 1.25
 
 ### Development environment
 
@@ -30,7 +31,6 @@ $ poetry shell
 To start onecontainer_api, from CLI (oca), run the following command:
 
 ```bash
-$ cd oneContainer-API/src/onecontainer_api
 $ poetry run oca launch
 ```
 
@@ -134,15 +134,3 @@ Onecontainer-api uses the [OpenAPI](https://www.openapis.org/) standard to gener
 ## Getting started
 
 For a *Getting started* tutorial, view the [Readme.md](demo/Readme.md) in the `demo` directory.
-
-## Contributing
-
-We'd love to accept your patches, if you have improvements to stacks, send us your pull requests or if you find any issues, raise an issue. Contributions can be anything from documentation updates to optimizations!
-
-## Security Issues
-
-Security issues can be reported to Intel's security incident response team via https://intel.com/security.
-
-## Mailing List
-
-See our public [mailing list](https://lists.01.org/mailman/listinfo/stacks) page for details on how to contact us. You should only subscribe to the Stacks mailing lists using an email address that you don't mind being public.

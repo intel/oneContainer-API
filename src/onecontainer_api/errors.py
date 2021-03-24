@@ -1,5 +1,3 @@
-# SPDX-License-Identifier: BSD-3-Clause
-#  Copyright (c) 2020 Intel Corporation
 """custom onecontainer-api errors."""
 from pydantic import BaseModel
 
@@ -22,6 +20,7 @@ QAPI_UNREACH_ERROR = 204
 QAPI_EXEC_ERROR = 205
 QAPI_JOB_ERROR = 206
 DATA_ERROR = 207
+SVC_EXEC_ERROR = 208
 
 SVC_ERROR_MSG = {
     NO_DRV_ERROR: "Driver is not available",
@@ -31,7 +30,8 @@ SVC_ERROR_MSG = {
     QAPI_UNREACH_ERROR: "Queue API is unreachable",
     QAPI_EXEC_ERROR: "Queue API call failed",
     QAPI_JOB_ERROR: "Queue API failed to process job",
-    DATA_ERROR: "Data error"
+    DATA_ERROR: "Data error",
+    SVC_EXEC_ERROR: "Backend execution failed",
 }
 
 

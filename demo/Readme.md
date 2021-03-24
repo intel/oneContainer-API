@@ -30,7 +30,7 @@ docker ps --filter "label=oca_service=default_backend"
 
 In this case there is a custom dlrs-pytorch-torchub service built within the oneContainer API source code, and an Apache Cassandra* service from Docker Hub*.
 
-**Note: If you don't want to install the default backend services, run oneContainer API with the `SVC_CREATE_ON_START=0` environment variable**
+**Note: If you don't want to install the default backend services, run oneContainer API with the `BACKEND_CREATE_ON_START=0` environment variable**
 
 **Note: The services will remain live even if oneContainer API is torn down. This will keep data persistency when you raise oneContainer API again.**
 

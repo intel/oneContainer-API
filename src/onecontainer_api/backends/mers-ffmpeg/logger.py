@@ -9,7 +9,7 @@ def _mk_log_dir(path: str) -> Path:
 
 
 def log_config(
-    file_path: Path = _mk_log_dir("logs/torchhub-serving.log"),
+    file_path: Path = _mk_log_dir("logs/ffmpeg-serving.log"),
     file_retention=1,
     file_rotation=30,
     level="DEBUG",

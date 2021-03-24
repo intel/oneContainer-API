@@ -1,11 +1,5 @@
-# SPDX-License-Identifier: BSD-3-Clause
-#  Copyright (c) 2020 Intel Corporation
 import json
 import os
-
-import onecontainer_api
-
-onecontainer_api.ENV_FILE = ".env.test"
 
 from onecontainer_api import config, schemas
 from onecontainer_api.routers import drivers

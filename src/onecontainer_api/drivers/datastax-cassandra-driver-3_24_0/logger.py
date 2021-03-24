@@ -1,5 +1,3 @@
-# SPDX-License-Identifier: BSD-3-Clause
-#  Copyright (c) 2020 Intel Corporation
 """logger config for cassandra driver"""
 from pathlib import Path
 

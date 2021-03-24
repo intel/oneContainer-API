@@ -1,5 +1,3 @@
-# SPDX-License-Identifier: BSD-3-Clause
-#  Copyright (c) 2020 Intel Corporation
 #!/usr/bin/env python3
 
 from cassandra.cluster import Cluster, NoHostAvailable

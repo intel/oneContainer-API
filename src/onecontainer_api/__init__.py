@@ -1,5 +1,3 @@
-# SPDX-License-Identifier: BSD-3-Clause
-#  Copyright (c) 2020 Intel Corporation
 try:
     from importlib.metadata import version, PackageNotFoundError  # type: ignore
 except ImportError:  # pragma: no cover

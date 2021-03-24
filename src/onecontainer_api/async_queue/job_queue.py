@@ -1,5 +1,3 @@
-# SPDX-License-Identifier: BSD-3-Clause
-#  Copyright (c) 2020 Intel Corporation
 """queue implementation."""
 import os
 from types import SimpleNamespace as SN
