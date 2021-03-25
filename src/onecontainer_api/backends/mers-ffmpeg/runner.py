@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: BSD-3-Clause
+#  Copyright (c) 2020 Intel Corporation
 """REST inteface to model_runner."""
 import io
 import pickle
