@@ -1,0 +1,11 @@
+{
+    "name": "mers-ffmpeg-driver",
+    "app": "mers-ffmpeg",
+    "app_version_match": ">=0.1.0",
+    "version": "0.1.0",
+    "deployment": "dockerfile",
+    "scope": "media",
+    "meta": {
+        "input_format": "raw"
+    }
+}

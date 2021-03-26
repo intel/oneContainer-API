@@ -6,18 +6,9 @@ import docker
 
 from fastapi.testclient import TestClient
 
-import onecontainer_api
-
-onecontainer_api.ENV_FILE = ".env.test"
-
 from onecontainer_api import models, schemas, config, startup_svc
 from onecontainer_api.frontend import app
 from onecontainer_api.routers import drivers
-
-
-@app.on_event("shutdown")
-def shutdown():
-    startup_svc.teardown()
 
 
 class TestServices():
@@ -32,7 +23,7 @@ class TestServices():
         with TestClient(app) as client:
             response = client.get("/service")
             assert response.status_code == 200
-            assert len(response.json()) == len(config.INITIAL_SERVICES)
+            assert len(response.json()) == len([x for x in config.INITIAL_SERVICES if "driver" in x])
 
     def test_get_service(self):
         with TestClient(app) as client:

@@ -7,7 +7,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError, ValidationError
 from fastapi.responses import JSONResponse
 
-from onecontainer_api.routers import ai, db, services, drivers, queues
+from onecontainer_api.routers import ai, db, media, services, drivers, queues
 from onecontainer_api import models, errors, startup_svc
 
 models.Base.metadata.create_all(bind=models.engine)
@@ -19,6 +19,7 @@ app = FastAPI(
 )
 app.include_router(ai.router, tags=["service_api"])
 app.include_router(db.router, tags=["service_api"])
+app.include_router(media.router, tags=["service_api"])
 app.include_router(services.router, tags=["management_api"])
 app.include_router(drivers.router, tags=["management_api"])
 app.include_router(queues.router, tags=["service_api"])
@@ -47,8 +48,8 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     elif type(child) == ValidationError:
         model = child.model.schema()['title']
         msg = child.errors()[0]['msg']
-        tagets = ",".join(child.errors()[0]['loc'])
-        status_msg = f"{model} {msg}: {tagets}"
+        targets = ",".join(map(str, child.errors()[0]['loc']))
+        status_msg = f"{model} {msg}: {targets}"
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
         content={"endpoint": request.url.path, "status": status_msg},
@@ -68,14 +69,20 @@ async def data_exception_handler(request: Request, exc: errors.DataException):
 
 @app.exception_handler(errors.ServiceException)
 async def service_exception_handler(request: Request, exc: errors.ServiceException):
-    status_msg = f"{exc.obj_ref} {exc.msg}"
-    if exc.detail:
-        status_msg = f"{status_msg}: {exc.detail}"
+    detail = ""
+    try:
+        detail = json.loads(exc.detail)
+    except json.decoder.JSONDecodeError:
+        detail = exc.detail
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
         content={
             "endpoint": request.url.path,
-            "status": status_msg.strip()
+            "status": {
+                "resource": exc.obj_ref,
+                "message": exc.msg,
+                "detail": detail
+            }
         },
     )
 

@@ -2,6 +2,7 @@
 #  Copyright (c) 2020 Intel Corporation
 import json
 import requests
+import time
 
 from fastapi import APIRouter
 from starlette.datastructures import UploadFile
@@ -24,7 +25,7 @@ def raise_worker(service_name: str):
         cont = client.containers.get(cont_name)
     except docker.errors.ImageNotFound:
         logger.debug(f"Building worker image {img_name}")
-        client.images.build(path="async_queue", tag=img_name, rm=True)
+        client.images.build(path=f"{config.BASE_DIR}/async_queue", tag=img_name, rm=True)
     except docker.errors.NotFound:
         logger.debug(f"Container {cont_name} not found")
 

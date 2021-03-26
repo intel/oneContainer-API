@@ -3,10 +3,6 @@
 import json
 import os
 
-import onecontainer_api
-
-onecontainer_api.ENV_FILE = ".env.test"
-
 from onecontainer_api import config, schemas
 from onecontainer_api.routers import drivers
 

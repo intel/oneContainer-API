@@ -25,7 +25,7 @@ NETWORK_GATEWAY = os.environ.get("DOCKER_NETWORK_GATEWAY", "10.5.0.1")
 # Driver related config
 
 PLUGIN_PATH = f"{Path.home()}/.onecontainer-api/drivers"
-NATIVE_PATH = "drivers"
+NATIVE_PATH = f"{BASE_DIR}/drivers"
 
 if not os.path.exists(PLUGIN_PATH):
     os.makedirs(PLUGIN_PATH)
@@ -71,7 +71,9 @@ DEFAULT_META = {
 
 
 # Startup config
-SVC_CREATE_ON_START = bool(os.environ.get("SVC_CREATE_ON_START", True))
+BACKEND_CREATE_ON_START = bool(os.environ.get("BACKEND_CREATE_ON_START", True))
+QUEUE_CREATE_ON_START = bool(os.environ.get("QUEUE_CREATE_ON_START", True))
+BACKEND_NETWORK_GATEWAY = os.environ.get("DOCKER_BACKEND_GATEWAY", "172.17.0.1")
 
 # We want to keep using the services created
 SVC_DELETE_ON_STOP = False
@@ -86,8 +88,7 @@ INITIAL_SERVICES = [
         },
         "scope": "db",
         "driver": "datastax-cassandra-driver-3.24.0"
-    },
-    {
+    }, {
         "image": "dlrs-pytorch-torchub",
         "version": "0.1.0",
         "source": "native",
@@ -96,5 +97,21 @@ INITIAL_SERVICES = [
         },
         "scope": "ai",
         "driver": "dlrs-torchub-driver-0.1.0"
+    }, {
+        "image": "mers-ffmpeg",
+        "version": "0.1.0",
+        "source": "native",
+        "port": {
+            "5552/tcp": 5552
+        },
+        "scope": "media",
+        "driver": "mers-ffmpeg-driver-0.1.0"
+    }, {
+        "image": "web-storage",
+        "version": "0.1.0",
+        "source": "native",
+        "port": {
+            "80/tcp": 5553
+        }
     }
 ]

@@ -108,3 +108,36 @@ class AIModelMeta(BaseModel):
     name: str
     path: str
     kwargs: Optional[Dict[str, Any]]
+
+
+class InputFile(BaseModel):
+    source: str
+    start_time: Optional[int]
+    duration: Optional[int]
+
+
+class Channel(BaseModel):
+    stream_type: str
+    codec: Optional[str]
+    params: Optional[Dict[str, Any]]
+    codec_params: Optional[Dict[str, Any]]
+    filters: Optional[Dict[str, Any]]
+
+
+class CloudStore(BaseModel):
+    name: str
+    bucket: str
+    env: Dict[str, str]
+
+
+class Output(BaseModel):
+    container: str
+    params: Optional[Dict[str, Any]]
+    channels: Optional[List[Channel]]
+    storage: Optional[List[CloudStore]]
+
+
+class Pipeline(BaseModel):
+    input_file: InputFile
+    outputs: List[Output]
+    ttl: Optional[int] = 300

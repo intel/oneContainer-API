@@ -65,9 +65,12 @@ def service_stack(driver: schemas.DriverBase, service: schemas.Service, method: 
         }
         exc.detail += f"Redeploy driver by executing a POST call to /service/{service.id}/driver with data: {json.dumps(drv_create)}"
         raise exc
+    if not ip:
+        raise errors.ServiceException(driver.name, errors.DRV_UNREACH_ERROR, "Can't determine driver IP address")
     url = f"http://{ip}:{config.DRIVER_PORT}{path}"
     if sync:
-        logger.debug(f"Executing {method.upper()} {url} with headers: {headers} and data: {data}")
+        # Don't print secrets, use this line in secure envs
+        # logger.debug(f"Executing {method.upper()} {url} with headers: {headers} and data: {data}")
         try:
             kwargs = {
                 "headers": headers,
@@ -91,8 +94,10 @@ def service_stack(driver: schemas.DriverBase, service: schemas.Service, method: 
                 output = json.loads(resp.text)
             except json.decoder.JSONDecodeError:
                 raise errors.ServiceException(url, errors.DRV_IMPL_ERROR, f'Ouptut is not JSON deserializable: "{resp.text}"')
-        else:
+        elif resp.status_code == 500:
             raise errors.ServiceException(url, errors.DRV_EXEC_ERROR, resp.text)
+        else:
+            raise errors.ServiceException(url, errors.SVC_EXEC_ERROR, resp.text)
     else:
         queues.check_api_status()
         resp = queues.queue_service(service.name, url, method, headers, data, ttl)
@@ -114,7 +119,7 @@ def get_driver_container(driver: schemas.DriverBase):
         raise errors.ServiceException(cont_name, errors.NO_DRV_ERROR, "Image doesn't exist.")
     except docker.errors.NotFound:
         raise errors.ServiceException(cont_name, errors.NO_DRV_ERROR, "Container doesn't exist.")
-    if cont.status == 'exited':
+    if cont.status != 'running':
         logger.debug(f"Container {cont_name} is not running. Running starting command")
         cont.start()
         time.sleep(3)

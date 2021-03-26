@@ -12,6 +12,8 @@ The requirements for onecontainer-api are the following:
 
  * Python >= 3.7
  * poetry >= 0.12
+ * docker version 19
+ * docker-compose version 1.25
 
 ### Development environment
 
@@ -30,7 +32,6 @@ $ poetry shell
 To start onecontainer_api, from CLI (oca), run the following command:
 
 ```bash
-$ cd oneContainer-API/src/onecontainer_api
 $ poetry run oca launch
 ```
 

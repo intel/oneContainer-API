@@ -475,6 +475,144 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/HTTPValidationError"
+  "/media/{service_id}/probe":
+    post:
+      tags:
+      - service_api
+      summary: Probe
+      description: Probe a media file
+      operationId: probe_media__service_id__probe_post
+      parameters:
+      - required: true
+        schema:
+          title: Service Id
+          type: string
+        name: service_id
+        in: path
+      - required: false
+        schema:
+          title: Sync
+          type: boolean
+          default: false
+        name: sync
+        in: query
+      - required: false
+        schema:
+          title: Ttl
+          type: integer
+          default: 3600
+        name: ttl
+        in: query
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/InputFile"
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/media/{service_id}/pipeline":
+    post:
+      tags:
+      - service_api
+      summary: Transcode
+      description: Create an ffmpeg pipeline
+      operationId: transcode_media__service_id__pipeline_post
+      parameters:
+      - required: true
+        schema:
+          title: Service Id
+          type: string
+        name: service_id
+        in: path
+      - required: false
+        schema:
+          title: Sync
+          type: boolean
+          default: false
+        name: sync
+        in: query
+      - required: false
+        schema:
+          title: Ttl
+          type: integer
+          default: 3600
+        name: ttl
+        in: query
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/Pipeline"
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/media/{service_id}/pipeline/{pipeline_id}":
+    get:
+      tags:
+      - service_api
+      summary: Get Outputs
+      description: Get the outputs of a pipeline
+      operationId: get_outputs_media__service_id__pipeline__pipeline_id__get
+      parameters:
+      - required: true
+        schema:
+          title: Service Id
+          type: string
+        name: service_id
+        in: path
+      - required: true
+        schema:
+          title: Pipeline Id
+          type: string
+        name: pipeline_id
+        in: path
+      - required: false
+        schema:
+          title: Sync
+          type: boolean
+          default: false
+        name: sync
+        in: query
+      - required: false
+        schema:
+          title: Ttl
+          type: integer
+          default: 3600
+        name: ttl
+        in: query
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
   "/service/":
     get:
       tags:
@@ -841,6 +979,46 @@ components:
           title: Image File
           type: string
           format: binary
+    Channel:
+      title: Channel
+      required:
+      - stream_type
+      type: object
+      properties:
+        stream_type:
+          title: Stream Type
+          type: string
+        codec:
+          title: Codec
+          type: string
+        params:
+          title: Params
+          type: object
+        codec_params:
+          title: Codec Params
+          type: object
+        filters:
+          title: Filters
+          type: object
+    CloudStore:
+      title: CloudStore
+      required:
+      - name
+      - bucket
+      - env
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+        bucket:
+          title: Bucket
+          type: string
+        env:
+          title: Env
+          type: object
+          additionalProperties:
+            type: string
     Column:
       title: Column
       required:
@@ -919,6 +1097,61 @@ components:
           type: array
           items:
             "$ref": "#/components/schemas/ValidationError"
+    InputFile:
+      title: InputFile
+      required:
+      - source
+      type: object
+      properties:
+        source:
+          title: Source
+          type: string
+        start_time:
+          title: Start Time
+          type: integer
+        duration:
+          title: Duration
+          type: integer
+    Output:
+      title: Output
+      required:
+      - container
+      type: object
+      properties:
+        container:
+          title: Container
+          type: string
+        params:
+          title: Params
+          type: object
+        channels:
+          title: Channels
+          type: array
+          items:
+            "$ref": "#/components/schemas/Channel"
+        storage:
+          title: Storage
+          type: array
+          items:
+            "$ref": "#/components/schemas/CloudStore"
+    Pipeline:
+      title: Pipeline
+      required:
+      - input_file
+      - outputs
+      type: object
+      properties:
+        input_file:
+          "$ref": "#/components/schemas/InputFile"
+        outputs:
+          title: Outputs
+          type: array
+          items:
+            "$ref": "#/components/schemas/Output"
+        ttl:
+          title: Ttl
+          type: integer
+          default: 300
     RecordDMLOptions:
       title: RecordDMLOptions
       type: object

@@ -4,17 +4,8 @@ import os
 
 from fastapi.testclient import TestClient
 
-import onecontainer_api
-
-onecontainer_api.ENV_FILE = ".env.test"
-
 from onecontainer_api import models, schemas, config, startup_svc
 from onecontainer_api.frontend import app
-
-
-@app.on_event("shutdown")
-def shutdown():
-    startup_svc.teardown()
 
 class TestAI():
 
@@ -27,7 +18,7 @@ class TestAI():
     def test_usage(self):
         with TestClient(app) as client:
             response = client.get("/service")
-            data = response.json()[1]
+            data = list(filter(lambda x: x['app'] == 'dlrs-pytorch-torchub', response.json()))[0]
             svc_id = data.pop("id")
             response = client.get(f"/ai/{svc_id}/usage")
             assert response.status_code == 200, response.text
@@ -35,7 +26,7 @@ class TestAI():
     def test_serve_missing_body(self):
         with TestClient(app) as client:
             response = client.get("/service")
-            data = response.json()[1]
+            data = list(filter(lambda x: x['app'] == 'dlrs-pytorch-torchub', response.json()))[0]
             svc_id = data.pop("id")
             response = client.post(f"/ai/{svc_id}/serve")
             assert response.status_code == 400, response.text
