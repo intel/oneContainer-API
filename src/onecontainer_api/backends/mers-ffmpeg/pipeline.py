@@ -47,7 +47,7 @@ class Input:
 
     @staticmethod
     def get_input_from_data(data: dict):
-        return Input(data.get("source"), data.get("ss"), data.get("duration"))
+        return Input(data.get("source"), data.get("start_time"), data.get("duration"))
 
     def __init__(self, source: str, start_time: int = None, duration: int = None):
         self.source = source
@@ -144,7 +144,7 @@ class Pipeline:
         if self.input_file.start_time:
             input_params["ss"] = self.input_file.start_time
         if self.input_file.duration:
-            input_params["duration"] = self.input_file.duration
+            input_params["t"] = self.input_file.duration
         has_video = False
         has_audio = False
         for stream in self.input_file.probe()["streams"]:
