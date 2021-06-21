@@ -2,9 +2,9 @@ FROM python:slim
 
 WORKDIR /workspace
 
-RUN pip install --no-cache-dir pip --upgrade
+RUN pip install pip --upgrade
 COPY requirements.txt .
-RUN pip install --no-cache-dir -U -r requirements.txt
+RUN pip install -U  -r requirements.txt
 COPY . .
 
 EXPOSE 5055

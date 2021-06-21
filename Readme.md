@@ -140,7 +140,9 @@ For a *Getting started* tutorial, view the [Readme.md](demo/Readme.md) in the `d
 
 We'd love to accept your patches, if you have improvements to stacks, send us your pull requests or if you find any issues, raise an issue. Contributions can be anything from documentation updates to optimizations!
 
-## Security Issues
+## Security Notes
+
+ffmpeg pipeline is serialized using pickle, de-serialization of the data from the database is a possible security issue if the database is un-trusted. We will be looking to fixing this issue in our next release.
 
 Security issues can be reported to Intel's security incident response team via https://intel.com/security.
 

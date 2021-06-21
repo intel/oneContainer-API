@@ -112,8 +112,7 @@ class AIModelMeta(BaseModel):
 
 class InputFile(BaseModel):
     source: str
-    start_time: Optional[int]
-    duration: Optional[int]
+    params: Optional[Dict[str, Any]]
 
 
 class Channel(BaseModel):
@@ -132,6 +131,8 @@ class CloudStore(BaseModel):
 
 class Output(BaseModel):
     container: str
+    rtmp_ip: Optional[str]
+    rtmp_path: Optional[str]
     params: Optional[Dict[str, Any]]
     channels: Optional[List[Channel]]
     storage: Optional[List[CloudStore]]

@@ -11,4 +11,10 @@ try:
 except PackageNotFoundError:  # pragma: no cover
     __version__ = "unknown"
 
+from onecontainer_api.logger import logger
+
 ENV_FILE = ".env"
+logger.debug("default CACHE TTE set to: 3600")
+logger.debug("set environment variable CACHE_TTE=<seconds> to set cache ttl")
+logger.debug("use 0 or None if you want to disable it")
+

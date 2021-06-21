@@ -131,9 +131,9 @@ Valid names for `CloudStore.name` are `"gcp"`, `"aws"` and `"azure"`.
 
 The `CouldStore.env` field is used for authenticating to the corresponding CSP in the format `{<name>:<value>}`, here is a list of the environment variable names required for each CSP:
 
-- gcp: `""`
-- aws: `""`
-- azure: `"AZURE_STORAGE_CONNECTION_STRING"`
+- gcp: `"GOOGLE_APPLICATION_CREDENTIALS"` see [GCP authentication docs](https://cloud.google.com/docs/authentication/getting-started#setting_the_environment_variable)
+- aws: `"AWS_ACCESS_KEY_ID"`, `"AWS_SECRET_ACCESS_KEY"` and `"AWS_SESSION_TOKEN"` see [boto3 credentials docs](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/credentials.html#environment-variables)
+- azure: `"AZURE_STORAGE_CONNECTION_STRING"` see [Azure Storage connection strings docs](https://docs.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string)
 
 ### Result retention period
 

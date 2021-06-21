@@ -1,0 +1,31 @@
+{
+    "input_file": {
+      "source": "https://ocapimedia.blob.core.windows.net/videospublic/big_buck_bunny_720p_surround.mp4",
+      "params": {
+        "re": null
+      }
+    },
+    "outputs": [
+      {
+        "container": "flv",
+        "rtmp_ip": "172.17.0.5",
+        "rtmp_path": "live",
+        "channels": [
+          {
+            "stream_type": "video",
+            "codec": "libx264",
+            "codec_params": {
+              "preset": "ultrafast",
+              "crf": "23",
+              "tune": "zerolatency"
+            },
+            "filters": {
+              "hue": {
+                "s": 0
+              }
+            }
+          }
+        ]
+      }
+    ]
+}

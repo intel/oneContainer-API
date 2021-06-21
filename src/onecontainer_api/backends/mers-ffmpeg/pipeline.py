@@ -5,10 +5,13 @@ import os
 import threading
 import time
 import random
+import signal
+import socket
 import subprocess
 from typing import List
 
 import ffmpeg
+import netifaces
 from sqlalchemy.orm import sessionmaker
 from cloudstore import store
 
@@ -35,6 +38,19 @@ def gen_id(size):
                    for x in range(size))
 
 
+def get_free_port():
+    port = random.randint(49152, 65535)
+    start_time = time.time()
+    timeout = False
+    while not socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect_ex(("127.0.0.1", port)) and not timeout:
+        port = random.randint(49152, 65535)
+        if time.time() - start_time > 60:
+            timeout = True
+    if timeout:
+        port = None
+    logger.debug(f"Port assigned: {port}")
+    return port
+
 class Channel:
     def __init__(self, stream_type: int, codec: str, params: dict = None, codec_params: dict = None, filters: dict = None):
         self.stream_type = stream_type
@@ -47,12 +63,11 @@ class Input:
 
     @staticmethod
     def get_input_from_data(data: dict):
-        return Input(data.get("source"), data.get("ss"), data.get("duration"))
+        return Input(data.get("source"), data.get("params"))
 
-    def __init__(self, source: str, start_time: int = None, duration: int = None):
+    def __init__(self, source: str, params: dict = None, duration: int = None):
         self.source = source
-        self.start_time = start_time
-        self.duration = duration
+        self.params = params
 
     def probe(self) -> dict:
         return ffmpeg.probe(self.source)
@@ -76,14 +91,29 @@ class Output:
             outputs.append(Output(**output_data))    
         return outputs
 
-    def __init__(self, container: str, params: dict = None, channels: List[Channel] = None, storage: dict = None, **kwargs):
+    def __init__(self, container: str, params: dict = None, channels: List[Channel] = None, storage: dict = None, broadcast_addr: str = None, **kwargs):
         self.container = container
-        self.params = params
+        self.params = params if params else {}
         self.channels = channels
-        self.id = f"{gen_id(8)}.{self.container}"
+        self.errors = []
+        if self.container == "mpegts":
+            self.id = get_free_port()
+            if self.id is None:
+                self.errors.append("Can't allocate a free UPD port")
+            self.broadcast_addr = broadcast_addr if broadcast_addr else list(netifaces.gateways()['default'].values())[0][0]
+            self.outfile = f"udp://{self.broadcast_addr}:{self.id}"
+            self.params["f"] = self.container
+        elif kwargs.get("rtmp_ip") and kwargs.get("rtmp_path"):
+            self.id = gen_id(8)
+            self.outfile = f"rtmp://{kwargs.get('rtmp_ip')}/{kwargs.get('rtmp_path')}"
+            self.params["f"] = "flv"
+        else:
+            self.id = gen_id(8)
+            self.outfile = f"{self.id}.{self.container}"
         self.storage = storage
         self.command = None
         self.ffmpeg_job = None
+        self.pid = None
 
     def get_status(self):
         if self.command is None:
@@ -101,6 +131,9 @@ class Output:
 
     def get_cmd_rc(self):
         if os.path.exists(f"{self.id}.ret"):
+            if self.pid is None:
+                with open(f"{self.id}.ret", 'w') as rcfile:
+                    rcfile.write("0")
             with open(f"{self.id}.ret", 'r') as rcfile:
                 return int(rcfile.read())
 
@@ -140,11 +173,8 @@ class Pipeline:
         session.commit()
 
     def transcode(self):
-        input_params = {"filename": self.input_file.source}
-        if self.input_file.start_time:
-            input_params["ss"] = self.input_file.start_time
-        if self.input_file.duration:
-            input_params["duration"] = self.input_file.duration
+        input_params = self.input_file.params or {}
+        input_params["filename"] = self.input_file.source
         has_video = False
         has_audio = False
         for stream in self.input_file.probe()["streams"]:
@@ -153,6 +183,7 @@ class Pipeline:
             elif stream["codec_type"] == 'audio':
                 has_audio = True
         pipeline_input = ffmpeg.input(**input_params)
+        jobs = []
         for output in self.outputs:
             output_params = output.params or {}
             video = pipeline_input.video
@@ -192,25 +223,31 @@ class Pipeline:
                 output_args.append(video)
             if has_audio:
                 output_args.append(audio)
-            output_args.append(output.id)
+            output_args.append(output.outfile)
             output.ffmpeg_job = ffmpeg.output(*output_args, **output_params)
             output.command = f"ffmpeg {' '.join(output.ffmpeg_job.get_args())}"
-        # Need to save in DB before executing threads because pickle don't support threads
+            process = ffmpeg.run_async(output.ffmpeg_job, pipe_stdout=True, pipe_stderr=True)
+            jobs.append([process, output])
+            output.pid = process.pid
         self._save_in_db()
         logger.debug(f"Starting jobs for pipeline: {self.id} with ttl of {self.ttl}")
-        jobs = []
-        for output in self.outputs:
+        for process, output in jobs:
             logger.debug(f"Running command: {output.command}")
-            process = ffmpeg.run_async(output.ffmpeg_job, pipe_stdout=True, pipe_stderr=True)
             output_watcher = threading.Thread(target=watch_output_job, args=(process, output))
             output_watcher.start()
-            jobs.append(process)
         pipeline_watcher = threading.Thread(target=watch_pipeline_jobs, args=(jobs, self))
         pipeline_watcher.start()
 
-    def get_outputs_ids(self):
+    def stop_transcoding(self):
         for output in self.outputs:
-            yield output.id
+            os.kill(output.pid, signal.SIGINT)
+            output.pid = None
+        time.sleep(2)
+        return self.get_outputs_data()
+
+    def get_outputs_outfiles(self):
+        for output in self.outputs:
+            yield output.outfile
 
     def get_outputs_data(self):
         for output in self.outputs:
@@ -234,14 +271,15 @@ def watch_output_job(process: subprocess.Popen, output: Output):
         for cloud_storage in output.storage:
             name = cloud_storage.get("name")
             bucket = cloud_storage.get("bucket")
-            logger.debug(f"Uploading {output.id} to {name}/{bucket}")
+            logger.debug(f"Uploading {output.outfile} to {name}/{bucket}")
             os.environ.update(cloud_storage.get("env", {}))
             st = store(name)
-            st.upload(bucket, output.id)
+            st.upload(bucket, output.outfile)
     logger.debug(f"Finished job: {output.id}")
 
+
 def watch_pipeline_jobs(jobs: list, pipeline: Pipeline):
-    for job in jobs:
+    for job, _ in jobs:
         job.wait()
     if pipeline.ttl:
         logger.debug(f"Deleting pipeline: {pipeline.id} in {pipeline.ttl} seconds")
@@ -253,6 +291,9 @@ def watch_pipeline_jobs(jobs: list, pipeline: Pipeline):
         logger.debug(f"Done deleting pipeline: {pipeline.id}")
         for output in pipeline.outputs:
             logger.debug(f"Deleting output: {output.id}")
-            os.remove(f"{output.id}.ret")
-            os.remove(f"{output.id}.err")
-            os.remove(f"{output.id}")
+            if os.path.exists(f"{output.id}.ret"):
+                os.remove(f"{output.id}.ret")
+            if os.path.exists(f"{output.id}.err"):
+                os.remove(f"{output.id}.err")
+            if os.path.exists(output.outfile):
+                os.remove(output.outfile)

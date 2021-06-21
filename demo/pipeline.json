@@ -1,0 +1,42 @@
+{
+  "input_file": {
+    "source": "https://ocapimedia.blob.core.windows.net/videospublic/big_buck_bunny_720p_surround.mp4",
+    "params": {
+      "ss": 15,
+      "t": 10
+    }
+  },
+  "outputs": [
+    {
+      "container": "mkv",
+      "channels": [
+        {
+          "stream_type": "video",
+          "codec": "libx264",
+          "codec_params": {
+            "preset": "fast",
+            "crf": "23"
+          },
+          "filters": {
+            "scale": {
+              "w": "iw/2",
+              "h": -1
+            },
+            "hue": {
+              "s": 0
+            }
+          }
+        }
+      ],
+      "storage": [
+        {
+          "name": "azure",
+          "bucket": "videospublic",
+          "env": {
+            "AZURE_STORAGE_CONNECTION_STRING": "DefaultEndpointsProtocol=https;AccountName=accnt_name;AccountKey=some_key==;EndpointSuffix=core.windows.net"
+          }
+        }
+      ]
+    }
+  ]
+}

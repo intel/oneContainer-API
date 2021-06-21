@@ -1,5 +1,5 @@
 ## default service backends
 
-- dlrs-pytorch-ubuntu
-
-
+- dlrs-pytorch-torchub
+- mers-ffmpeg
+- web-rtmp

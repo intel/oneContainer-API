@@ -55,8 +55,6 @@ async def probe(request):
     client, error = get_client(request)
     if error:
         return error, 400
-    # resp = client.probe(request.json)
-    # return sanic.response.text(await resp)
     resp, status = await client.probe(request.json)
     if status == 500:
         status = 400
@@ -65,12 +63,10 @@ async def probe(request):
 @app.route("/pipeline", methods=["POST"])
 async def transcode(request):
     """executes a transcoding pipeline job."""
-    logger.debug("client api - probe")
+    logger.debug("client api - transcode")
     client, error = get_client(request)
     if error:
         return error, 400
-    # resp = client.transcode(request.json)
-    # return sanic.response.text(await resp)
     resp, status = await client.transcode(request.json)
     if status == 500:
         status = 400
@@ -83,8 +79,19 @@ async def get_outputs(request, pipeline_id):
     client, error = get_client(request)
     if error:
         return error, 400
-    # return sanic.response.text(json.dumps(await client.get_outputs(pipeline_id)))
     resp, status = await client.get_outputs(pipeline_id)
+    if status == 500:
+        status = 400
+    return response.json(resp, status=status)
+
+
+@app.route("/pipeline/<pipeline_id:string>", methods=["DELETE"])
+async def stop_pipeline(request, pipeline_id):
+    """stops a transcoding pipeline job."""
+    client, error = get_client(request)
+    if error:
+        return error, 400
+    resp, status = await client.stop_pipeline(pipeline_id)
     if status == 500:
         status = 400
     return response.json(resp, status=status)
