@@ -1,12 +1,13 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #  Copyright (c) 2020 Intel Corporation
+
 import json
-import requests
 import time
 
+import docker
+import requests
 from fastapi import APIRouter
 from starlette.datastructures import UploadFile
-import docker
 
 from onecontainer_api import config, errors
 from onecontainer_api.logger import logger
@@ -28,9 +29,13 @@ def raise_worker(service_name: str):
         client.images.build(path=f"{config.BASE_DIR}/async_queue", tag=img_name, rm=True)
     except docker.errors.NotFound:
         logger.debug(f"Container {cont_name} not found")
-
     if cont:
-        logger.debug("Worker container already up")
+        logger.debug("Worker container found")
+        if cont.status != 'running':
+            logger.debug(f"Container {cont_name} is not running. Running starting command")
+            cont.start()
+            time.sleep(3)
+            cont = client.containers.get(cont_name)
     else:
         logger.debug(f"Creating worker container {cont_name}")
         client.containers.run(img_name, detach=True, network=config.NETWORK_NAME, working_dir="/workspace", name=cont_name, command=f"rq worker --url redis://oca_redis:6379 {service_name}")
@@ -80,3 +85,5 @@ async def get_job(job_id: str):
     except requests.exceptions.ConnectionError:
         raise errors.ServiceException(config.QUEUE_API_URL, errors.QAPI_UNREACH_ERROR, "Check service or network")
     return output
+
+

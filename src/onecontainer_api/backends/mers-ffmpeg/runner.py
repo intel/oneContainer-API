@@ -61,6 +61,12 @@ async def create_pipeline(request):
                 "status":"error",
                 "description": "No outputs specified"
             }, status=400)
+    for output in pipeline.outputs:
+        if output.errors:
+            return response.json({
+                "status":"error",
+                "description": output.errors
+            }, status=400)
     try:
         pipeline.transcode()
     except ffmpeg._run.Error as e:
@@ -72,11 +78,11 @@ async def create_pipeline(request):
             }, status=400)
     return response.json({
             "id": pipeline.id,
-            "outputs": list(pipeline.get_outputs_data())
+            "outputs": list(pipeline.get_outputs_outfiles())
         })
 
 
-@app.route("/pipeline/<pipeline_id:string>")
+@app.route("/pipeline/<pipeline_id:string>", methods=["GET"])
 async def get_pipeline(request, pipeline_id):
     """Get pipeline."""
     pipeline = Pipeline.get_from_db(pipeline_id)
@@ -86,6 +92,18 @@ async def get_pipeline(request, pipeline_id):
                 "description": f"Pipeline {pipeline_id} doesn't exist"
             }, status=400)
     return response.json(list(pipeline.get_outputs_data()))
+
+
+@app.route("/pipeline/<pipeline_id:string>", methods=["DELETE"])
+async def delete_pipeline(request, pipeline_id):
+    """Stop pipeline."""
+    pipeline = Pipeline.get_from_db(pipeline_id)
+    if pipeline is None:
+        return response.json({
+                "status":"error",
+                "description": f"Pipeline {pipeline_id} doesn't exist"
+            }, status=400)
+    return response.json(list(pipeline.stop_transcoding()))
 
 
 if __name__ == "__main__":

@@ -9,14 +9,18 @@ from onecontainer_api import models, schemas, config, startup_svc
 from onecontainer_api.frontend import app
 
 web_server_port = 80
+rtmp_server_port = 1935
 for svc in config.INITIAL_SERVICES:
-    if svc["image"] == "web-storage":
-        web_server_port = list(svc["port"].values())[0]
+    if svc["image"] == "web-rtmp":
+        web_server_port = svc["port"]["80/tcp"]
+        rtmp_server_port = svc["port"]["1935/tcp"]
         break
 
 video_0 = f"http://{config.BACKEND_NETWORK_GATEWAY}:{web_server_port}/sample-videos/fruit-and-vegetable-detection.mp4"
 video_1 = f"http://{config.BACKEND_NETWORK_GATEWAY}:{web_server_port}/sample-videos/bottle-detection.mp4"
 video_2 = f"http://{config.BACKEND_NETWORK_GATEWAY}:{web_server_port}/sample-videos/face-demographics-walking.mp4"
+
+rtmp_ip = f"{config.BACKEND_NETWORK_GATEWAY}:{rtmp_server_port}"
 
 input_data = {
     "source": video_0
@@ -73,6 +77,56 @@ pipeline_h264 = {
           "codec_params": {
             "preset": "ultrafast",
             "tune": "film",
+            "crf": "30"
+          }
+        }
+      ]
+    }
+  ]
+}
+
+pipeline_mpegts = {
+  "input_file": {
+    "source": video_1,
+    "params": {
+      "re": None
+    }
+  },
+  "outputs": [
+    {
+      "container": "mpegts",
+      "channels": [
+        {
+          "stream_type": "video",
+          "codec": "libx264",
+          "codec_params": {
+            "preset": "fast",
+            "crf": "30"
+          }
+        }
+      ]
+    }
+  ]
+}
+
+pipeline_rtmp = {
+  "input_file": {
+    "source": video_1,
+    "params": {
+      "re": None
+    }
+  },
+  "outputs": [
+    {
+      "container": "flv",
+      "rtmp_ip": rtmp_ip,
+      "rtmp_path": "live",
+      "channels": [
+        {
+          "stream_type": "video",
+          "codec": "libx264",
+          "codec_params": {
+            "preset": "fast",
             "crf": "30"
           }
         }
@@ -296,7 +350,7 @@ class TestMedia():
             assert response.status_code == 200
             for output in response.json():
                 assert output['status'] == 'error'
-                assert output['command_output'][-1].strip() == f"{output.get('id')}: Invalid argument"
+                assert output['command_output'][-1].strip() == f"{output.get('id')}.wrong: Invalid argument"
             json_data["outputs"][0]["container"] = "mkv"
             json_data["outputs"][0]["channels"][0]["codec"] = "wrong"
             response = client.post(f"/media/{svc_id}/pipeline?sync=true", json=json_data)
@@ -312,9 +366,14 @@ class TestMedia():
             json_data["outputs"][0]["channels"][0]["stream_type"] = "wrong"
             response = client.post(f"/media/{svc_id}/pipeline?sync=true", json=json_data)
             assert response.status_code == 200
+            pipeline_id = response.json()['id']
+            outputs = response.json().get("outputs", [])
+            response = client.get(f"/media/{svc_id}/pipeline/{pipeline_id}?sync=true")
+            assert response.status_code == 200
             result = response.json()
-            for output in result.get("outputs", []):
-                assert output.get('command') == f"ffmpeg -i {video_1} -map 0:v {output.get('id')}"
+            for index in range(len(result)):
+                assert result[index]['status'] != 'error'
+                assert result[index]['command'] == f"ffmpeg -i {video_1} -map 0:v {outputs[index]}"
 
     def test_pipeline_copy(self):
         with TestClient(app) as client:
@@ -323,9 +382,14 @@ class TestMedia():
             svc_id = data.pop("id")
             response = client.post(f"/media/{svc_id}/pipeline?sync=true", json=pipeline_copy)
             assert response.status_code == 200
+            pipeline_id = response.json()['id']
+            outputs = response.json().get("outputs", [])
+            response = client.get(f"/media/{svc_id}/pipeline/{pipeline_id}?sync=true")
+            assert response.status_code == 200
             result = response.json()
-            for output in result.get("outputs", []):
-                assert output.get('command') == f"ffmpeg -i {video_2} -map 0:v -map 0:a -acodec copy -vcodec copy {output.get('id')}"
+            for index in range(len(result)):
+                assert result[index]['status'] != 'error'
+                assert result[index]['command'] == f"ffmpeg -i {video_2} -map 0:v -map 0:a -acodec copy -vcodec copy {outputs[index]}"
 
     def test_pipeline_empty(self):
         with TestClient(app) as client:
@@ -334,9 +398,14 @@ class TestMedia():
             svc_id = data.pop("id")
             response = client.post(f"/media/{svc_id}/pipeline?sync=true", json=pipeline_empty)
             assert response.status_code == 200
+            pipeline_id = response.json()['id']
+            outputs = response.json().get("outputs", [])
+            response = client.get(f"/media/{svc_id}/pipeline/{pipeline_id}?sync=true")
+            assert response.status_code == 200
             result = response.json()
-            for output in result.get("outputs", []):
-                assert output.get('command') == f"ffmpeg -i {video_2} -map 0:v -map 0:a {output.get('id')}"
+            for index in range(len(result)):
+                assert result[index]['status'] != 'error'
+                assert result[index]['command'] == f"ffmpeg -i {video_2} -map 0:v -map 0:a {outputs[index]}"
 
     def test_pipeline_mkv(self):
         with TestClient(app) as client:
@@ -345,9 +414,14 @@ class TestMedia():
             svc_id = data.pop("id")
             response = client.post(f"/media/{svc_id}/pipeline?sync=true", json=pipeline_mkv)
             assert response.status_code == 200
+            pipeline_id = response.json()['id']
+            outputs = response.json().get("outputs", [])
+            response = client.get(f"/media/{svc_id}/pipeline/{pipeline_id}?sync=true")
+            assert response.status_code == 200
             result = response.json()
-            for output in result.get("outputs", []):
-                assert output.get('command') == f"ffmpeg -i {video_1} -map 0:v -default_mode infer_no_subs -metadata stereo_mode=left_right {output.get('id')}"
+            for index in range(len(result)):
+                assert result[index]['status'] != 'error'
+                assert result[index]['command'] == f"ffmpeg -i {video_1} -map 0:v -default_mode infer_no_subs -metadata stereo_mode=left_right {outputs[index]}"
 
     def test_pipeline_mp4(self):
         with TestClient(app) as client:
@@ -356,9 +430,14 @@ class TestMedia():
             svc_id = data.pop("id")
             response = client.post(f"/media/{svc_id}/pipeline?sync=true", json=pipeline_mp4)
             assert response.status_code == 200
+            pipeline_id = response.json()['id']
+            outputs = response.json().get("outputs", [])
+            response = client.get(f"/media/{svc_id}/pipeline/{pipeline_id}?sync=true")
+            assert response.status_code == 200
             result = response.json()
-            for output in result.get("outputs", []):
-                assert output.get('command') == f"ffmpeg -i {video_1} -map 0:v -movflags isml+frag_keyframe {output.get('id')}"
+            for index in range(len(result)):
+                assert result[index]['status'] != 'error'
+                assert result[index]['command'] == f"ffmpeg -i {video_1} -map 0:v -movflags isml+frag_keyframe {outputs[index]}"
 
     def test_pipeline_aac(self):
         with TestClient(app) as client:
@@ -367,9 +446,14 @@ class TestMedia():
             svc_id = data.pop("id")
             response = client.post(f"/media/{svc_id}/pipeline?sync=true", json=pipeline_aac)
             assert response.status_code == 200
+            pipeline_id = response.json()['id']
+            outputs = response.json().get("outputs", [])
+            response = client.get(f"/media/{svc_id}/pipeline/{pipeline_id}?sync=true")
+            assert response.status_code == 200
             result = response.json()
-            for output in result.get("outputs", []):
-                assert output.get('command') == f"ffmpeg -i {video_2} -map 0:v -map 0:a -ab 192000 -acodec aac -profile:a aac_ltp -strict -2 -vn {output.get('id')}"
+            for index in range(len(result)):
+                assert result[index]['status'] != 'error'
+                assert result[index]['command'] == f"ffmpeg -i {video_2} -map 0:v -map 0:a -ab 192000 -acodec aac -profile:a aac_ltp -strict -2 -vn {outputs[index]}"
 
     def test_pipeline_h264(self):
         with TestClient(app) as client:
@@ -378,9 +462,15 @@ class TestMedia():
             svc_id = data.pop("id")
             response = client.post(f"/media/{svc_id}/pipeline?sync=true", json=pipeline_h264)
             assert response.status_code == 200
+            pipeline_id = response.json()['id']
+            outputs = response.json().get("outputs", [])
+            time.sleep(2)
+            response = client.get(f"/media/{svc_id}/pipeline/{pipeline_id}?sync=true")
+            assert response.status_code == 200
             result = response.json()
-            for output in result.get("outputs", []):
-                assert output.get('command') == f"ffmpeg -i {video_1} -map 0:v -crf 30 -preset ultrafast -tune film -vcodec libx264 {output.get('id')}"
+            for index in range(len(result)):
+                assert result[index]['status'] == 'finished'
+                assert result[index]['command'] == f"ffmpeg -i {video_1} -map 0:v -crf 30 -preset ultrafast -tune film -vcodec libx264 {outputs[index]}"
 
     def test_pipeline_filters(self):
         with TestClient(app) as client:
@@ -389,9 +479,15 @@ class TestMedia():
             svc_id = data.pop("id")
             response = client.post(f"/media/{svc_id}/pipeline?sync=true", json=pipeline_filters)
             assert response.status_code == 200
+            pipeline_id = response.json()['id']
+            outputs = response.json().get("outputs", [])
+            time.sleep(5)
+            response = client.get(f"/media/{svc_id}/pipeline/{pipeline_id}?sync=true")
+            assert response.status_code == 200
             result = response.json()
-            for output in result.get("outputs", []):
-                assert output.get('command') == f"ffmpeg -i {video_2} -filter_complex [0:v]scale=h=-1:w=iw/2[s0];[s0]deflicker=mode=pm:size=10[s1];[s1]reverse[s2];[s2]hue=s=0[s3];[0:a]atrim=start=1[s4];[s4]asetpts=PTS-STARTPTS[s5];[s5]volume=volume=0.8[s6];[s6]areverse[s7];[s7]aphaser[s8] -map [s3] -map [s8] {output.get('id')}"
+            for index in range(len(result)):
+                assert result[index]['status'] == 'finished'
+                assert result[index]['command'] == f"ffmpeg -i {video_2} -filter_complex [0:v]scale=h=-1:w=iw/2[s0];[s0]deflicker=mode=pm:size=10[s1];[s1]reverse[s2];[s2]hue=s=0[s3];[0:a]atrim=start=1[s4];[s4]asetpts=PTS-STARTPTS[s5];[s5]volume=volume=0.8[s6];[s6]areverse[s7];[s7]aphaser[s8] -map [s3] -map [s8] {outputs[index]}"
 
     def test_pipeline_supported_containers(self):
         with TestClient(app) as client:
@@ -403,19 +499,20 @@ class TestMedia():
                 json_data["outputs"][0]["container"] = container
                 response = client.post(f"/media/{svc_id}/pipeline?sync=true", json=json_data)
                 assert response.status_code == 200
-                result = response.json()
-                for output in result.get("outputs", []):
-                    assert output.get('command') == f"ffmpeg -i {video_2} -map 0:v -map 0:a {output.get('id')}"
+                pipeline_id = response.json()['id']
+                outputs = response.json().get("outputs", [])
                 timeout = 15
                 finished = False
-                while not finished or timeout == 0:
+                while not finished and timeout:
                     time.sleep(3)
-                    response = client.get(f"/media/{svc_id}/pipeline/{result['id']}?sync=true")
+                    response = client.get(f"/media/{svc_id}/pipeline/{pipeline_id}?sync=true")
                     assert response.status_code == 200
-                    for output in response.json():
-                        assert output['status'] != 'error'
-                        if output['status'] == 'finished':
-                            assert output['command_retcode'] == 0
+                    result = response.json()
+                    for index in range(len(result)):
+                        assert result[index]['status'] != 'error'
+                        if result[index]['status'] == 'finished':
+                            assert result[index]['command_retcode'] == 0
+                            assert result[index]['command'] == f"ffmpeg -i {video_2} -map 0:v -map 0:a {outputs[index]}"
                             finished = True
                     timeout -= 1
                 if not finished:
@@ -432,19 +529,20 @@ class TestMedia():
                 json_data["outputs"][0]["channels"] = [{"stream_type": "audio", "codec": codec}, {"stream_type": "video", "params": {"vn": None}}]
                 response = client.post(f"/media/{svc_id}/pipeline?sync=true", json=json_data)
                 assert response.status_code == 200
-                result = response.json()
-                for output in result.get("outputs", []):
-                    assert output.get('command') == f"ffmpeg -i {video_2} -map 0:v -map 0:a -acodec {codec} -vn {output.get('id')}"
+                pipeline_id = response.json()['id']
+                outputs = response.json().get("outputs", [])
                 timeout = 15
                 finished = False
-                while not finished or timeout == 0:
+                while not finished and timeout:
                     time.sleep(3)
-                    response = client.get(f"/media/{svc_id}/pipeline/{result['id']}?sync=true")
+                    response = client.get(f"/media/{svc_id}/pipeline/{pipeline_id}?sync=true")
                     assert response.status_code == 200
-                    for output in response.json():
-                        assert output['status'] != 'error'
-                        if output['status'] == 'finished':
-                            assert output['command_retcode'] == 0
+                    result = response.json()
+                    for index in range(len(result)):
+                        assert result[index]['status'] != 'error'
+                        if result[index]['status'] == 'finished':
+                            assert result[index]['command_retcode'] == 0
+                            assert result[index]['command'] == f"ffmpeg -i {video_2} -map 0:v -map 0:a -acodec {codec} -vn {outputs[index]}"
                             finished = True
                     timeout -= 1
                 if not finished:
@@ -462,19 +560,20 @@ class TestMedia():
                 json_data["outputs"][0]["channels"] = [{"stream_type": "video", "codec": codec, "params": {"vf":"format=nv12,hwupload"}}]
                 response = client.post(f"/media/{svc_id}/pipeline?sync=true", json=json_data)
                 assert response.status_code == 200
-                result = response.json()
-                for output in result.get("outputs", []):
-                    assert output.get('command') == f"ffmpeg -i {video_2} -map 0:v -map 0:a -vaapi_device /dev/dri/renderD128 -vcodec {codec} -vf format=nv12,hwupload {output.get('id')}"
+                pipeline_id = response.json()['id']
+                outputs = response.json().get("outputs", [])
                 timeout = 15
                 finished = False
                 while not finished or timeout == 0:
                     time.sleep(3)
-                    response = client.get(f"/media/{svc_id}/pipeline/{result['id']}?sync=true")
+                    response = client.get(f"/media/{svc_id}/pipeline/{pipeline_id}?sync=true")
                     assert response.status_code == 200
-                    for output in response.json():
-                        assert output['status'] != 'error'
-                        if output['status'] == 'finished':
-                            assert output['command_retcode'] == 0
+                    result = response.json()
+                    for index in range(len(result)):
+                        assert result[index]['status'] != 'error'
+                        if result[index]['status'] == 'finished':
+                            assert result[index]['command_retcode'] == 0
+                            assert result[index]['command'] == f"ffmpeg -i {video_2} -map 0:v -map 0:a -vaapi_device /dev/dri/renderD128 -vcodec {codec} -vf format=nv12,hwupload {outputs[index]}"
                             finished = True
                     timeout -= 1
                 if not finished:
@@ -514,4 +613,73 @@ class TestMedia():
                 response = client.post(f"/media/{svc_id}/pipeline?sync=true", json=json_data)
                 assert response.status_code == 200
                 # response = client.get(f"/media/{svc_id}/pipeline/{result['id']}?sync=true")
-            
+
+    def test_pipeline_mpegts(self):
+        with TestClient(app) as client:
+            response = client.get("/service")
+            data = list(filter(lambda x: x['app'] == 'mers-ffmpeg', response.json()))[0]
+            svc_id = data.pop("id")
+            response = client.post(f"/media/{svc_id}/pipeline?sync=true", json=pipeline_mpegts)
+            assert response.status_code == 200
+            pipeline_id = response.json()['id']
+            outputs = response.json().get("outputs", [])
+            time.sleep(30)
+            response = client.get(f"/media/{svc_id}/pipeline/{pipeline_id}?sync=true")
+            assert response.status_code == 200
+            result = response.json()
+            for index in range(len(result)):
+                assert result[index]['status'] == 'running'
+                assert result[index]['command'] == f"ffmpeg -re -i {video_1} -map 0:v -f mpegts -crf 30 -preset fast -vcodec libx264 {outputs[index]}"
+            time.sleep(15)
+            response = client.get(f"/media/{svc_id}/pipeline/{pipeline_id}?sync=true")
+            assert response.status_code == 200
+            result = response.json()
+            for index in range(len(result)):
+                assert result[index]['status'] == 'finished'
+
+    def test_pipeline_stop(self):
+        with TestClient(app) as client:
+            response = client.get("/service")
+            data = list(filter(lambda x: x['app'] == 'mers-ffmpeg', response.json()))[0]
+            svc_id = data.pop("id")
+            response = client.post(f"/media/{svc_id}/pipeline?sync=true", json=pipeline_mpegts)
+            assert response.status_code == 200
+            pipeline_id = response.json()['id']
+            outputs = response.json().get("outputs", [])
+            time.sleep(2)
+            response = client.get(f"/media/{svc_id}/pipeline/{pipeline_id}?sync=true")
+            assert response.status_code == 200
+            result = response.json()
+            for index in range(len(result)):
+                assert result[index]['status'] == 'running'
+                assert result[index]['command'] == f"ffmpeg -re -i {video_1} -map 0:v -f mpegts -crf 30 -preset fast -vcodec libx264 {outputs[index]}"
+            time.sleep(2)
+            response = client.delete(f"/media/{svc_id}/pipeline/{pipeline_id}?sync=true")
+            assert response.status_code == 200
+            result = response.json()
+            for index in range(len(result)):
+                assert result[index]['status'] == 'finished'
+    
+    def test_pipeline_rtmp(self):
+        with TestClient(app) as client:
+            response = client.get("/service")
+            data = list(filter(lambda x: x['app'] == 'mers-ffmpeg', response.json()))[0]
+            svc_id = data.pop("id")
+            response = client.post(f"/media/{svc_id}/pipeline?sync=true", json=pipeline_rtmp)
+            assert response.status_code == 200
+            pipeline_id = response.json()['id']
+            outputs = response.json().get("outputs", [])
+            time.sleep(30)
+            response = client.get(f"/media/{svc_id}/pipeline/{pipeline_id}?sync=true")
+            assert response.status_code == 200
+            result = response.json()
+            for index in range(len(result)):
+                assert outputs[index] == f"rtmp://{rtmp_ip}/live"
+                assert result[index]['status'] == 'running'
+                assert result[index]['command'] == f"ffmpeg -re -i {video_1} -map 0:v -f flv -crf 30 -preset fast -vcodec libx264 {outputs[index]}"
+            time.sleep(15)
+            response = client.get(f"/media/{svc_id}/pipeline/{pipeline_id}?sync=true")
+            assert response.status_code == 200
+            result = response.json()
+            for index in range(len(result)):
+                assert result[index]['status'] == 'finished'

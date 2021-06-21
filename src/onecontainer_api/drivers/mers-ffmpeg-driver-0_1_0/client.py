@@ -44,3 +44,9 @@ class Client:
         async with self.session as sess:
             async with sess.get(f"{self.url}/pipeline/{pipeline_id}") as resp:
                 return await resp.json(), resp.status
+
+    async def stop_pipeline(self, pipeline_id):
+        """gets the outputs a transcoding pipeline job."""
+        async with self.session as sess:
+            async with sess.delete(f"{self.url}/pipeline/{pipeline_id}") as resp:
+                return await resp.json(), resp.status

@@ -11,6 +11,9 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(BASE_DIR, onecontainer_api.ENV_FILE))
 sys.path.append(BASE_DIR)
 
+# cache time to expire
+cache_tte = int(os.environ.get("CACHE_TTE", 3600)) 
+
 # General config
 
 ID_SIZE = 8
@@ -107,11 +110,12 @@ INITIAL_SERVICES = [
         "scope": "media",
         "driver": "mers-ffmpeg-driver-0.1.0"
     }, {
-        "image": "web-storage",
+        "image": "web-rtmp",
         "version": "0.1.0",
         "source": "native",
         "port": {
-            "80/tcp": 5553
+            "80/tcp": 5553,
+            "1935/tcp": 5554
         }
     }
 ]

@@ -25,6 +25,7 @@ def create_service(svc: dict):
     if os.path.exists("/dev/dri/renderD128"):
         gpu_args["devices"] = ["/dev/dri"]
         gpu_args["environment"] = ["QSV_DEVICE=/dev/dri/renderD128"]
+        gpu_args["group_add"] = [os.stat("/dev/dri/renderD128").st_gid]
     cont = client.containers.run(svc['image'], detach=True, name=svc['name'], ports=svc.get("port", None), labels={"oca_service": "default_backend"}, **gpu_args)
     logger.debug("Service started")
     return cont
