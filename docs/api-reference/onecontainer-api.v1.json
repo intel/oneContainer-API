@@ -933,6 +933,74 @@
             }
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "service_api"
+        ],
+        "summary": "Delete Pipeline",
+        "description": "Stop a pipeline",
+        "operationId": "delete_pipeline_media__service_id__pipeline__pipeline_id__delete",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Service Id",
+              "type": "string"
+            },
+            "name": "service_id",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Pipeline Id",
+              "type": "string"
+            },
+            "name": "pipeline_id",
+            "in": "path"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Sync",
+              "type": "boolean",
+              "default": false
+            },
+            "name": "sync",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Ttl",
+              "type": "integer",
+              "default": 3600
+            },
+            "name": "ttl",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/service/": {
@@ -1681,13 +1749,9 @@
             "title": "Source",
             "type": "string"
           },
-          "start_time": {
-            "title": "Start Time",
-            "type": "integer"
-          },
-          "duration": {
-            "title": "Duration",
-            "type": "integer"
+          "params": {
+            "title": "Params",
+            "type": "object"
           }
         }
       },
@@ -1700,6 +1764,14 @@
         "properties": {
           "container": {
             "title": "Container",
+            "type": "string"
+          },
+          "rtmp_ip": {
+            "title": "Rtmp Ip",
+            "type": "string"
+          },
+          "rtmp_path": {
+            "title": "Rtmp Path",
             "type": "string"
           },
           "params": {
