@@ -1,3 +1,13 @@
+# DISCONTINUATION OF PROJECT.
+
+This project will no longer be maintained by Intel.
+
+This project has been identified as having known security escapes.
+
+Intel has ceased development and contributions including, but not limited to, maintenance, bug fixes, new releases, or updates, to this project.
+
+Intel no longer accepts patches to this project.
+
 # oneContainer API
 
 OneContainer-API is a platform to enable unified APIs for containerized services and backends in multiple segments like AI, Database, and Media.
