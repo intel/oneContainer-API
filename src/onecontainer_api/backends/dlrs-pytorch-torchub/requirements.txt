@@ -2,5 +2,5 @@ pillow==7.2.*
 hypercorn==0.8.*
 hypercorn[trio]==0.8.*
 trio==0.17.*
-sanic==20.9.1
+sanic==20.12.7
 loguru==0.5.*
